@@ -3,14 +3,14 @@
 
 int windowWidth = 1000;
 int windowHeight = 1000;
-bool isRunning = false;// Flag to control the simulation state
-bool mousePressed = false;
-bool mousePressedRight = false;
 int squareSize = 10; // Size of each cell in pixels
 int spacing = 1; // Spacing between cells
 
 int main(){
 
+bool isRunning = false;// Flag to control the simulation state
+bool mousePressed = false;
+bool mousePressedRight = false;
 int cellStep = squareSize + spacing; // Calculate the total size of each cell including spacing
 int cells [windowWidth/cellStep][windowHeight/cellStep]={0};
 int mouseX, mouseY, gridX, gridY;
@@ -19,7 +19,7 @@ int gridHeight = windowHeight / cellStep;
 
 
 sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight),
-	"Game of Life");
+	"Kat's Game of Life");
 sf::RectangleShape cell(sf::Vector2f(squareSize,squareSize));
 
 

@@ -1,0 +1,11 @@
+compailes using the makefile, type into terminal:
+make
+to clean the build type:
+make clean
+--------------------------------------------------------------------------------------------------------
+without makefile, type these commands:
+g++ -o main.o main.cpp -lsfml-graphics -lsfml-window -lsfml-system
+./main.o
+
+to clean the build, type:
+rm -f *.o
