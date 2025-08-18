@@ -35,28 +35,20 @@ while (window.isOpen()) {
 			
 		//mouse events
 		if(event.type == sf::Event::MouseButtonPressed){
-			
 			mouseX = event.mouseButton.x;
 			mouseY = event.mouseButton.y;
+			gridX = mouseX / cellStep;
+			gridY = mouseY / cellStep;
+			// Check which button was pressed for drawing or killing cells
+			//draw cell on left click
 			if(event.mouseButton.button == sf::Mouse::Left) {
 				mousePressed = true;
-				gridX = mouseX / cellStep; // Calculate grid position
-				gridY = mouseY / cellStep;
-
-				if (gridX >= 0 && gridX < windowWidth / cellStep && 
-					gridY >= 0 && gridY < windowHeight / cellStep) {
-					cells[gridX][gridY] = 1;//make cell alive
-				}
+				editCell(&cells[0][0], gridX, gridY, cellStep, 1); // Call editCell to mark the cell alive
 			}
+			//kill cell on right click
 			else if(event.mouseButton.button == sf::Mouse::Right) {
 				mousePressedRight = true;
-				gridX = mouseX / cellStep;
-				gridY = mouseY / cellStep;
-
-				if (gridX >= 0 && gridX < windowWidth / cellStep && 
-					gridY >= 0 && gridY < windowHeight / cellStep) {
-					cells[gridX][gridY] = 0;//kill cell
-				}
+				editCell(&cells[0][0], gridX, gridY, cellStep, 0); // Call editCell to kill the cell
 			}
 	}//end of mouse button event
 
@@ -77,20 +69,18 @@ while (window.isOpen()) {
 				mouseY = event.mouseMove.y;
 				gridX = mouseX / cellStep; // Calculate grid position
 			    gridY = mouseY / cellStep;
-				if(gridX >= 0 && gridX < windowWidth / cellStep &&
-					gridY >= 0 && gridY < windowHeight / cellStep) {
-					cells[gridX][gridY] = 1;
-				}
+				editCell(&cells[0][0], gridX, gridY, cellStep, 1); // Call editCell to update the cell state
+				// if(gridX >= 0 && gridX < windowWidth / cellStep &&
+				// 	gridY >= 0 && gridY < windowHeight / cellStep) {
+				// 	cells[gridX][gridY] = 1;
+				// }
 			}
 			if(mousePressedRight) {
 				mouseX = event.mouseMove.x;
 				mouseY = event.mouseMove.y;
 				gridX = mouseX / cellStep; // Calculate grid position
 			    gridY = mouseY / cellStep;
-				if(gridX >= 0 && gridX < windowWidth / cellStep &&
-					gridY >= 0 && gridY < windowHeight / cellStep) {
-					cells[gridX][gridY] = 0;
-				}
+				editCell(&cells[0][0], gridX, gridY, cellStep, 0); // Call editCell to update the cell state
 			}
 		}//end of mouse move event
 
@@ -133,13 +123,24 @@ window.display();
 return 0;
 }// end of main
 
-int nextGeneration(int* cells, int width, int height) {
+int editCell(int *cells,int gridX,int gridY,int cellStep,int alive ) {
+	int gridWidth = windowWidth / cellStep;
+	if(gridX >= 0 && gridX < windowWidth / cellStep &&
+		gridY >= 0 && gridY < windowHeight / cellStep) {
+					cells[gridY+gridX*gridWidth] = alive;
+				}
+				return 0; // Return 0 to indicate success
+}
+
+int nextGeneration(int* cells, int width, int height) 
+{//handles moving to the next generation of cells
 	int cellStep = squareSize + spacing; // Calculate the total size of each cell including spacing
 	int gridWidth = width / cellStep;
 	int gridHeight = height / cellStep;
 
 	int* newCells = new int[gridWidth * gridHeight](); // Temporary array for new state
 
+	//grid loop
 	for(int j=0; j<gridHeight; j++) {
 		for(int i=0; i<gridWidth; i++) {
 			int idx = j * gridWidth + i;
@@ -147,33 +148,39 @@ int nextGeneration(int* cells, int width, int height) {
 			// Check all 8 neighbors
 			for(int y = -1; y <= 1; y++) {
 				for(int x = -1; x <= 1; x++) {
-					if(x == 0 && y == 0) continue;
-					int ni = i + x;
-					int nj = j + y;
-					if(ni >= 0 && ni < gridWidth && nj >= 0 && nj < gridHeight) {
-						if(cells[nj * gridWidth + ni] == 1) aliveNeighbors++;
+					if(x == 0 && y == 0) continue;// Skip the cell itself
+					int ni = i + x;//neighbor index x
+					int nj = j + y;//neighbor index y
+					if(ni >= 0 && ni < gridWidth && nj >= 0 && nj < gridHeight) {// Check bounds
+						if(cells[nj * gridWidth + ni] == 1) aliveNeighbors++;// Count alive neighbors
 					}
 				}
 			}
-			if ((cells[idx] == 1)&& (aliveNeighbors < 2 || aliveNeighbors > 3)) {
-				newCells[idx] = 0; // Cell dies
+			//current cell=: original state if 2 neighbors, plus alive if 3 neighbors
+			newCells[idx]=cells[idx]*(aliveNeighbors ==2? 1 : 0) + 1*(aliveNeighbors==3?1:0); // Default to current state, update based on neighbors
+
+			/*commented code for reference of original logic
+			if ((aliveNeighbors < 2 || aliveNeighbors > 3)) {
+				newCells[idx] = 0; // Cell dies if less than 2 or more than 3 neighbors
 			}
-			else if(cells[idx] == 0 && aliveNeighbors == 3) {
-				newCells[idx] = 1; // Cell becomes alive
+			else if(aliveNeighbors == 3) {
+				newCells[idx] = 1; // Cell becomes alive if exactly 3 neighbors
 			}
 			else{
-				newCells[idx] = cells[idx]; // Cell remains the same
+				newCells[idx] = cells[idx]; // Cell remains the same, still adds to newCells for later update
 			}
+				*/
 		}
-	}
+	}// end of grid loop
 
+	// Update the original cells array with the new state
 	for(int j=0; j<gridHeight; j++) {
 		for(int i=0; i<gridWidth; i++) {
-			int idx = j * gridWidth + i;
+			int idx = j * gridWidth + i;// Calculate the index in the 1D array
 			cells[idx] = newCells[idx]; // Update the original cells array
 		}
 	}
-	delete[] newCells;
+delete[] newCells;// Free the temporary array
 	
-	return 0;
-}
+return 0;
+}// end of nextGeneration
