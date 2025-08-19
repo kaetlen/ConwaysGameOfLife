@@ -1,6 +1,6 @@
 compailes using the makefile, type into terminal:
 make
-to clean the build type:
+to clean the build, type:
 make clean
 --------------------------------------------------------------------------------------------------------
 without makefile, type these commands:
