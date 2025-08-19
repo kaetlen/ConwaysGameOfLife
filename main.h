@@ -15,6 +15,7 @@ extern bool mousePressed;
 extern bool mousePressedRight;
 extern int mouseX, mouseY;
 extern bool isRunning;// Flag to control the simulation state
+extern int gameSpeed; // Speed of the game in milliseconds
 
 
 

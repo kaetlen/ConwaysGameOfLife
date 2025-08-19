@@ -10,7 +10,11 @@ bool mousePressed = false;
 bool mousePressedRight = false;
 int mouseX, mouseY;
 bool isRunning = false;// Flag to control the simulation state
+int gameSpeed = 50; // Speed of the game in milliseconds
+
 int main(){
+
+int timerNextGeneration = 0; // Timer for next generation update
 int cellStep = squareSize + spacing; // Calculate the total size of each cell including spacing
 int cells [windowWidth/cellStep][windowHeight/cellStep]={0};
 int  gridX, gridY;
@@ -33,7 +37,13 @@ inputHandler(window, &cells[0][0], gridHeight, gridWidth, cellStep);
 //render stage
 if(isRunning) 
 {// Update cells based on Game of Life rules
+if(timerNextGeneration < gameSpeed) {
+	timerNextGeneration++; // Increment timer
+}
+else{
+timerNextGeneration = 0; // Reset timer
 nextGeneration(&cells[0][0], windowWidth, windowHeight); // Call the function to update cells
+}
 }
 
 

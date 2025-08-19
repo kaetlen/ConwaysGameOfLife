@@ -80,7 +80,17 @@ int inputHandler(sf::RenderWindow& window, int* cells,int gridHeight, int gridWi
 						}
 					}
 				}
+			if(event.key.code == sf::Keyboard::Left){
+				if(gameSpeed < 500) {
+					gameSpeed += 10; // Increase game speed
+				}
 			}
+			if(event.key.code == sf::Keyboard::Right){
+				if(gameSpeed > 0) {
+					gameSpeed -= 10; // Decrease game speed
+				}
+			}
+			}//end of keyboard event
 	
 		}//end of event loop
 		return 0; // Return 0 to indicate success
